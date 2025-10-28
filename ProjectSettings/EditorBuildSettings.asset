@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/DeadScene.unity
     guid: d1103da90c1cb3c4897c84ff3f784fae
   - enabled: 1
+    path: Assets/Scenes/BattleScene.unity
+    guid: 375c8f93789ca3b43abf1adc7cfa15b5
+  - enabled: 1
     path: Assets/Scenes/Stage_1.unity
     guid: 241733e4f5afca641924a435fef8db15
   - enabled: 1

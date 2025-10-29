@@ -9,11 +9,14 @@ public class PlayerSpawnPoint : MonoBehaviour
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null) return;
 
-        // 이전 전투에서 돌아온 경우만 적용
+        // 전투에서 돌아온 경우만 위치 복원
         if (BattleData.enemyDefeated)
         {
             player.transform.position = BattleData.playerPosition;
-            Debug.Log($"플레이어를 전투 시작 위치로 이동: {BattleData.playerPosition}");
+            Debug.Log($"플레이어 전투 복귀 위치: {BattleData.playerPosition}");
+
+            // 다음 복귀 때 혼동 방지
+            BattleData.enemyDefeated = false;
         }
     }
 }

@@ -7,21 +7,30 @@ public class PFEnemy : MonoBehaviour
 {
     private bool isPlayerNearby = false;
     [SerializeField] private int stageNumber = 1;
+    [SerializeField] private string enemyPrefabName;//  3D 전투에서 소환할 프리팹 이름
+    public GameObject Wall;
+
+    private void OnEnable()
+    {
+        //  전투 후 복귀 시, 이미 처치된 적만 제거
+        if (BattleData.defeatedEnemies.Contains(enemyPrefabName))
+        {
+            if (Wall != null)
+                Wall.SetActive(false);
+
+            Debug.Log($"[Enemy2D] {enemyPrefabName} 이미 처치됨 → 제거 및 벽 해제");
+            Destroy(gameObject);
+        }
+    }
+
 
     void Start()
     {
-        //  전투에서 죽은 적 확인
-        if (BattleData.enemyDefeated)
+        // 죽은 적 제거
+        if (BattleData.enemyDefeated && BattleData.enemyName == gameObject.name && BattleData.stageIndex == stageNumber)
         {
-            Debug.Log($"[Enemy2D] {gameObject.name} 검사 중 - Stage {stageNumber}");
-            Debug.Log($"현재 BattleData: enemyName={BattleData.enemyName}, stageIndex={BattleData.stageIndex}");
-
-            if (BattleData.enemyName == gameObject.name && BattleData.stageIndex == stageNumber)
-            {
-                Debug.Log($"[Enemy2D] {gameObject.name}은(는) 이미 죽은 적 → 삭제됨");
-                Destroy(gameObject);
-                return;
-            }
+            Destroy(gameObject);
+            BattleData.enemyDefeated = false;
         }
     }
 
@@ -32,12 +41,18 @@ public class PFEnemy : MonoBehaviour
             Debug.Log($"{gameObject.name}과 전투 시작!");
 
             GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
+            BattlePlayerController playerHP = GetComponent<BattlePlayerController>();
+            if (playerHP != null)
+            {
+                BattleData.playerHP = playerHP.currentHP;
+                BattleData.playerMaxHP = playerHP.maxHP;
                 BattleData.playerPosition = player.transform.position;
-
+            }
             BattleData.enemyName = gameObject.name;
+            BattleData.enemyPrefabName = enemyPrefabName; //  프리팹 이름 저장
             BattleData.stageIndex = stageNumber;
-            BattleData.enemyDefeated = false; //  새로운 전투 시작 시 false로 초기화
+            BattleData.enemyDefeated = false;
+
             SceneManager.LoadScene("BattleScene");
         }
     }

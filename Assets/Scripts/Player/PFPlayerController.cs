@@ -2,9 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 
 public class PFPlayerController : MonoBehaviour
 {
+    public float maxHP = 100f;
+    public float currentHP;
+    public Slider hpSlider;
     public float moveSpeed = 5f;                   //캐릭터 이동속도를 조절   
     public float jumpForce = 5f;                   //캐릭터 점프힘 조절
     public Transform groundcheck;                  //캐릭터가 땅에 닿았는지 확인
@@ -19,6 +24,27 @@ public class PFPlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         pAni = GetComponent<Animator>();
+    }
+    void Start()
+    {
+        if (BattleData.enemyDefeated && BattleData.playerHP > 0)
+        {
+            transform.position = BattleData.playerPosition;
+
+            maxHP = BattleData.playerMaxHP;
+            currentHP = BattleData.playerHP;
+            Debug.Log($"[PlayerHealth2D] 전투 후 HP 복원: {currentHP}/{maxHP}");
+        }
+        else
+        {
+            currentHP = maxHP;
+        }
+
+        if (hpSlider != null)
+        {
+            hpSlider.maxValue = maxHP;
+            hpSlider.value = currentHP;
+        }
     }
 
     private void Update()
@@ -63,5 +89,12 @@ public class PFPlayerController : MonoBehaviour
         {
             collision.GetComponent<Scene>().MovetoNextLevel();
         }
+    }
+    public void TakeDamage(float dmg)
+    {
+        currentHP -= dmg;
+        if (currentHP < 0) currentHP = 0;
+        if (hpSlider != null)
+            hpSlider.value = currentHP;
     }
 }
